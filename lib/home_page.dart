@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:http/http.dart' as http;
+import 'package:login_screen/screens/login_screen/login_screen.dart';
 import 'dart:convert';
-import 'package:quickalert/quickalert.dart';
 
-enum Reaction { happy, sad, neutral, angry, none }
+
+
+
+enum Reaction { happy, sick, neutral, angry, none }
+
 
 
 
@@ -33,17 +37,20 @@ class _HomePageState extends State<HomePage> {
   bool _showDescriptionError = false;
   bool _showEmojiError = false;
 
-  // Define the reactions list with emojis
-  List<String> emojis = [
+
+
+
+
+    List<String> emojis = [
     "😄", // Happy emoji
-    "😢", // Sad emoji
+    "🤢", // Sick emoji
     "😐", // Neutral emoji
     "😠", // Angry emoji
   ];
 
 
 
-
+ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void dispose() {
@@ -62,80 +69,100 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        
         title: Container(
           width: 80,
-          height: 70,
+          height: 40,
           child: Image.asset('assets/images/sofrecom.png'),
         ),
-        backgroundColor: Color.fromARGB(255, 239, 239, 239),
-      ),
+        
+        backgroundColor: Color(0xFF234E70),
+         actions: [
+    IconButton(
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()), // Replace with your actual LoginScreen class
+        );
+      },
+      icon: Icon(Icons.exit_to_app),
+    ),
+  ],
+),
+
+
+
+
+
+
+
+
+
+
+
+
+    
       backgroundColor: Color(0xFF234E70),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (_reactionView)
-              Container(
-                height: 50,
-                width: 200,
-                decoration: BoxDecoration(
-                  color: Color(0xFFFBF8BE),
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: emojis.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 375),
-                      child: SlideAnimation(
-                        verticalOffset: 50.0,
-                        child: FadeInAnimation(
-                          child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _reaction = Reaction.values[index];
-                                _reactionView = false;
-                                _showEmojiError = false;
-                              });
-                            },
-                            icon: Text(
-                              emojis[index],
-                              style: TextStyle(fontSize: 24),
-                            ),
+            Container(
+              height: 50,
+              width: 200,
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(218, 218, 172, 0.867),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: emojis.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 375),
+                    child: SlideAnimation(
+                      verticalOffset: 50.0,
+                      child: FadeInAnimation(
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _reaction = Reaction.values[index];
+                              _showEmojiError = false;
+                            });
+                          },
+                          icon: Text(
+                            emojis[index],
+                            style: TextStyle(fontSize: 24),
                           ),
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
-         
-         
-         
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _reactionView = !_reactionView;
-                  _showEmojiError = false;
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                primary: Color(0xFFFBF8BE),
-              ),
-              child: _reaction == Reaction.none
-                  ? const Text(
-                      'React',
-                      style: TextStyle(fontSize: 24, color: Color(0xFF234E70)),
-                    )
-                  : Text(
-                      getReactionEmoji(_reaction),
-                      style: TextStyle(fontSize: 24),
                     ),
+                  );
+                },
+              ),
             ),
+
+
+
+
+
+            
+            SizedBox(height: 16),
+            // Display the selected emoji directly
+            Text(
+              _reaction == Reaction.none ? '' : getReactionEmoji(_reaction),
+              style: TextStyle(fontSize: 40),
+            ),
+
+
           
+
+      
+
+
+
+                  
           
           
             SizedBox(height: 16),
@@ -181,6 +208,8 @@ class _HomePageState extends State<HomePage> {
                       'Validate',
                       style: TextStyle(color: Color(0xFF234E70)),
                     ),
+                
+                    
                   ),
                   if (_showDescriptionError)
                     AnimatedOpacity(
@@ -223,8 +252,8 @@ class _HomePageState extends State<HomePage> {
     switch (reaction) {
       case Reaction.happy:
         return "😄";
-      case Reaction.sad:
-        return "😢";
+      case Reaction.sick:
+        return "🤢";
       case Reaction.neutral:
         return "😐";
       case Reaction.angry:
@@ -238,7 +267,7 @@ class _HomePageState extends State<HomePage> {
     switch (reaction) {
       case Reaction.happy:
         return 1;
-      case Reaction.sad:
+      case Reaction.sick:
         return 2;
       case Reaction.neutral:
         return 3;
@@ -272,17 +301,24 @@ class _HomePageState extends State<HomePage> {
         final success = await apiService.saveReactionData(matricule, reactionId, description, currentDate);
 
         print('Response Status Code: $success'); // Print the success value
+        
+        
+        
+        
         if (success) {
           final responseText = success as String; // Success value should be the response text
           if (responseText.contains('Mood added successfully')) {
-            // Show the success alert
-            QuickAlert.show(
-              context: context,
-              type: QuickAlertType.success,
-              text: 'Form Submitted Successfully!',
-              textColor: const Color(0xFF234E70),
-              backgroundColor: const Color(0xFFFBF8BE),
-            );
+    
+
+ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Description added successfully!'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+
+
+  
 
             setState(() {
               _reaction = Reaction.none;
@@ -295,7 +331,16 @@ class _HomePageState extends State<HomePage> {
             // Handle other responses or errors
             // ...
           }
-        } else {
+        } 
+        
+        
+        
+        
+        
+        
+        
+        
+        else {
           print('Failed to save data to the database.');
         }
       } catch (error, stackTrace) {
@@ -303,9 +348,15 @@ class _HomePageState extends State<HomePage> {
         print('Stack Trace: $stackTrace');
       }
     }
+ // Clear the text field and dismiss the keyboard
+      _descriptionController.clear();
+      FocusScope.of(context).unfocus(); // This will dismiss the keyboard
+    }
   }
-}
 
+
+
+ 
 
 
 
@@ -356,6 +407,4 @@ class ApiService {
       return false;
     }
   }
-
-  static fetchUsers() {}
 }
