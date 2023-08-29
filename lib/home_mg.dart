@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:login_screen/screens/login_screen/login_screen.dart';
 
 
 class TableItem {
@@ -34,9 +35,24 @@ class HomeManagerPage extends StatelessWidget {
           height: 40,
           child: Image.asset('assets/images/sofrecom.png'),
         ),
-        backgroundColor: Color(0xFF234E70), // Set AppBar color to Royal Blue
-      ),
-      backgroundColor: Color(0xFF234E70), // Set background color to Royal Blue
+        backgroundColor: Color(0xFF234E70), 
+          actions: [
+    IconButton(
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()), // Replace with your actual LoginScreen class
+        );
+      },
+      icon: Icon(Icons.exit_to_app),
+    ),
+  ],
+),
+         
+      
+
+
+      backgroundColor: Color(0xFF234E70), 
       body: MyApp(),
     );
   }
@@ -48,6 +64,19 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+ Map<String, String> moodEmojis = {
+    "happy": "😄",
+    "sick": "🤢",
+     "neutral": "😐",
+    "Angry": "😠",
+  
+  };
+
+
+
+
+
   final List<TableItem> tableData = [
     TableItem(
         matricule: "",
@@ -118,10 +147,7 @@ List<dynamic> Moods = [];
   }
 
 
-
-
-
-  @override
+ @override
   Widget build(BuildContext context) {
     return Container(
       child: Column(
@@ -181,6 +207,16 @@ List<dynamic> Moods = [];
               ),
             ],
           ),
+
+
+  
+
+
+
+
+
+
+          
           Expanded(
             child: ListView.builder(
               itemCount: filteredData.length,
@@ -205,22 +241,34 @@ List<dynamic> Moods = [];
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("${item.nom} ${item.prenom}", style: TextStyle(fontSize: 18, color: Color(0xFFFBF8BE))), // Set text color to Pale Yellow
+                          Row(
+                            children: [
+                          Text(
+                             "${moodEmojis[item.humeur]}",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                             SizedBox(width: 10),
+                             Expanded( 
+                            child: Text(
+                                "${item.nom} ${item.prenom}",  style: TextStyle(fontSize: 18, color: Color(0xFFFBF8BE))),
+                             // Set text color to Pale Yellow
+                             ),
                           if (isSelected)
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Matricule: ${item.matricule}', style: TextStyle(color: Color(0xFFFBF8BE))),
-                                Text('Humeur: ${item.humeur}', style: TextStyle(color: Color(0xFFFBF8BE))), // Set text color to Pale Yellow
+                          
                                 Text('Description: ${item.description}', style: TextStyle(color: Color(0xFFFBF8BE))), // Set text color to Pale Yellow
                                 Text('Date: ${item.date}', style: TextStyle(color: Color(0xFFFBF8BE))), // Set text color to Pale Yellow
                               ],
                             ),
                         ],
                       ),
+                        ],
                     ),
                   ),
-                );
+                ));
               },
             ),
           ),
@@ -230,7 +278,10 @@ List<dynamic> Moods = [];
   }
 
 
- 
+
+
+
+  
 
 }
 
@@ -357,6 +408,7 @@ class MoodData {
     required this.dateHumeur,
   });
 }
+
 
 
 
