@@ -112,7 +112,7 @@ class _LoginContentState extends State<LoginContent> {
               color: kPrimaryColor,
             ),
           ),
-          const SizedBox(width: 10), // Add some space between the line and the image
+          const SizedBox(width: 26), // Add some space between the line and the image
           Image.asset(
             'assets/images/sofrecom.png',
             height: 65, // Adjust the height of the image as per your requirement
