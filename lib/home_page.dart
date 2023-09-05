@@ -4,16 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:login_screen/screens/login_screen/login_screen.dart';
 import 'dart:convert';
 
-
-
-
 enum Reaction { happy, sick, neutral, angry, none }
-
-
-
-
-
-
 
 class HomePage extends StatefulWidget {
   final String matricule;
@@ -24,12 +15,6 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-
-
-
-
-
-
 class _HomePageState extends State<HomePage> {
   Reaction _reaction = Reaction.none;
   bool _reactionView = false;
@@ -37,20 +22,12 @@ class _HomePageState extends State<HomePage> {
   bool _showDescriptionError = false;
   bool _showEmojiError = false;
 
-
-
-
-
-    List<String> emojis = [
+  List<String> emojis = [
     "😄", // Happy emoji
     "🤢", // Sick emoji
     "😐", // Neutral emoji
     "😠", // Angry emoji
   ];
-
-
-
- final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void dispose() {
@@ -58,50 +35,31 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        
         title: Container(
           width: 80,
           height: 40,
           child: Image.asset('assets/images/sofrecom.png'),
         ),
-        
         backgroundColor: Color(0xFF234E70),
-         actions: [
-    IconButton(
-      onPressed: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen()), // Replace with your actual LoginScreen class
-        );
-      },
-      icon: Icon(Icons.exit_to_app),
-    ),
-  ],
-),
-
-
-
-
-
-
-
-
-
-
-
-
-    
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        LoginScreen()), // Replace with your actual LoginScreen class
+              );
+            },
+            icon: Icon(Icons.exit_to_app),
+          ),
+        ],
+      ),
       backgroundColor: Color(0xFF234E70),
       body: Center(
         child: Column(
@@ -143,11 +101,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-
-
-
-
-            
             SizedBox(height: 16),
             // Display the selected emoji directly
             Text(
@@ -155,16 +108,6 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(fontSize: 40),
             ),
 
-
-          
-
-      
-
-
-
-                  
-          
-          
             SizedBox(height: 16),
             // Description area
             Padding(
@@ -173,7 +116,10 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   const Text(
                     'Description:',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFFFBF8BE)),
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFFBF8BE)),
                   ),
                   const SizedBox(height: 10),
                   AnimatedContainer(
@@ -192,24 +138,20 @@ class _HomePageState extends State<HomePage> {
                         hintText: 'Enter your description here',
                         hintStyle: TextStyle(color: Color(0xFFFBF8BE)),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                       ),
                     ),
                   ),
-                 
-                 
-                 
                   ElevatedButton(
                     onPressed: saveReactionDataToDb,
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xFFFBF8BE),
+                      backgroundColor: Color(0xFFFBF8BE),
                     ),
                     child: Text(
                       'Validate',
                       style: TextStyle(color: Color(0xFF234E70)),
                     ),
-                
-                    
                   ),
                   if (_showDescriptionError)
                     AnimatedOpacity(
@@ -244,10 +186,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
- 
- 
- 
- 
   String getReactionEmoji(Reaction reaction) {
     switch (reaction) {
       case Reaction.happy:
@@ -278,12 +216,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-
-
-
-
-
-
   Future<void> saveReactionDataToDb() async {
     setState(() {
       _showDescriptionError = _descriptionController.text.isEmpty;
@@ -298,27 +230,21 @@ class _HomePageState extends State<HomePage> {
         final currentDate = DateTime.now();
 
         final apiService = ApiService();
-        final success = await apiService.saveReactionData(matricule, reactionId, description, currentDate);
+        final success = await apiService.saveReactionData(
+            matricule, reactionId, description, currentDate);
 
         print('Response Status Code: $success'); // Print the success value
-        
-        
-        
-        
+
         if (success) {
-          final responseText = success as String; // Success value should be the response text
+          final responseText =
+              success as String; // Success value should be the response text
           if (responseText.contains('Mood added successfully')) {
-    
-
-ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Description added successfully!'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-
-
-  
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Description added successfully!'),
+                duration: Duration(seconds: 2),
+              ),
+            );
 
             setState(() {
               _reaction = Reaction.none;
@@ -331,16 +257,7 @@ ScaffoldMessenger.of(context).showSnackBar(
             // Handle other responses or errors
             // ...
           }
-        } 
-        
-        
-        
-        
-        
-        
-        
-        
-        else {
+        } else {
           print('Failed to save data to the database.');
         }
       } catch (error, stackTrace) {
@@ -348,25 +265,11 @@ ScaffoldMessenger.of(context).showSnackBar(
         print('Stack Trace: $stackTrace');
       }
     }
- // Clear the text field and dismiss the keyboard
-      _descriptionController.clear();
-      FocusScope.of(context).unfocus(); // This will dismiss the keyboard
-    }
+    // Clear the text field and dismiss the keyboard
+    _descriptionController.clear();
+    FocusScope.of(context).unfocus(); // This will dismiss the keyboard
   }
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
+}
 
 class ApiService {
   static const String baseUrl = 'http://10.0.2.2:8080/Humeur_salarie/api';
