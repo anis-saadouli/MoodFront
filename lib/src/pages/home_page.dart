@@ -17,7 +17,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Reaction _reaction = Reaction.none;
-  bool _reactionView = false;
   TextEditingController _descriptionController = TextEditingController();
   bool _showDescriptionError = false;
   bool _showEmojiError = false;
@@ -248,7 +247,6 @@ class _HomePageState extends State<HomePage> {
 
             setState(() {
               _reaction = Reaction.none;
-              _reactionView = false;
               _descriptionController.clear();
               _showDescriptionError = false;
               _showEmojiError = false;
